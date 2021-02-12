@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.resizableColumns.min.js"></script>
+    <script type="text/javascript" src="js/nicoment.js"></script>
+    <script type="text/javascript" src="js/store.js"></script>
+    <link rel="stylesheet" href="css/nicoment.css">
+    <link rel="stylesheet" href="css/jquery.resizableColumns.css">
+    <title>NICOMENT</title>
+</head>
+<body>
+    <div id="table-wrap">
+        <table id="CommentTable" data-resizable-columns-id="comment-table">
+            <thead>
+                <tr>
+                    <th class="no" data-resizable-column-id="No">No</th>
+                    <th class="userid" data-resizable-column-id="userID">UserID</th>
+                    <th class="time" data-resizable-column-id="time">時間</th>
+                    <th class="comment" data-resizable-column-id="comment">コメント</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+</html>
