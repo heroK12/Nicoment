@@ -14,11 +14,13 @@ window.onload = function(){
     let websocket_comment;
 
     //nicoment.html要素取得
-    //let btn = document.getElementById('sendbtn');
     let CommentTable = document.getElementById('CommentTable');
 
     //Tbody作成
     let creteTbody = CommentTable.createTBody();
+
+    //ページ最下部設定
+    let pageBottom = true;
 
     //配信開始時刻
     let beginStreamTime;
@@ -197,8 +199,14 @@ window.onload = function(){
             $('table').resizableColumns({
                 store: window.store
             });
+            
+            //ページ最下部だった場合は自動スクロール
+            if (pageBottom){
+                let element = document.documentElement;
+                let bottom = element.scrollHeight - element.clientHeight;
+                window.scroll(0, bottom);
+            }
         }
-        
     }
     
     //コメントサーバエラー時
@@ -218,7 +226,15 @@ window.onload = function(){
         let dateTime = new Date(commentTime * 1000);
         return dateTime.toLocaleTimeString('ja-JP',{ timeZone: 'Africa/Abidjan' });
     }
+
+    //スクロール検知
+    $(window).on("scroll", function() {
+        var scrollHeight = $(document).height();
+        var scrollPosition = $(window).height() + $(window).scrollTop();
+        if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+            pageBottom = true;
+        }else{
+            pageBottom = false;
+        }
+    });
 }
-
-
-
