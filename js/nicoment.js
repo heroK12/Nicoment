@@ -20,13 +20,13 @@ window.onload = function(){
     //Tbody作成
     let creteTbody = CommentTable.createTBody();
 
+    //配信開始時刻
+    let beginStreamTime;
+
     //システムサーバに送るメッセージ
     const sendMessage1 = '{"type":"startWatching","data":{"stream":{"quality":"abr","protocol":"hls","latency":"low","chasePlay":false},"room":{"protocol":"webSocket","commentable":true},"reconnect":false}}';
     const sendMessage2 = '{"type":"getAkashic","data":{"chasePlay":false}}';
 
-    $('table').resizableColumns({
-        store: window.store
-    });
 
     chrome.runtime.onMessage.addListener(
         function(request,sender,sendResponse){
@@ -90,6 +90,7 @@ window.onload = function(){
         //console.log("Response from System Server" + e.data);
         let is_room = e.data.indexOf("room");
         let is_ping = e.data.indexOf("ping");
+        let is_schedule = e.data.indexOf("schedule");
 
         if(is_room > 0){
             let e_dataJson = JSON.parse(e.data);
@@ -103,6 +104,13 @@ window.onload = function(){
         if(is_ping > 0){
             doSendSystemMsg('{"type":"pong"}');
             doSendSystemMsg('{"type":"keepSeat"}');
+        }
+
+        //配信開始時刻取得
+        if(is_schedule > 0){
+            let e_scheduleData = JSON.parse(e.data);
+            //UNIX時間
+            beginStreamTime = Date.parse(e_scheduleData.data.begin) / 1000;
         }
 
     }
@@ -151,39 +159,44 @@ window.onload = function(){
 
         let is_chat = e.data.indexOf("chat");
         if (is_chat > 0){
+            //Jsonより情報取得
             let msgJson = JSON.parse(e.data);
             let commentNo = msgJson.chat.no;
             let msg_user_id = msgJson.chat.user_id;
             let commentTime = msgJson.chat.date;
             let comment = msgJson.chat.content;
 
-            
-
+            // テーブル追加処理
             let rowCount = CommentTable.rows.length;
             let newRow = creteTbody.insertRow(rowCount-1);
- 
-            // console.log(rowCount);
 
             //コメント番号
             let newCell = newRow.insertCell();
             let newtext = document.createTextNode(commentNo);
-            //console.log(newtext);
+            newCell.className ="no"
             newCell.appendChild(newtext);
 
             //ユーザーID
             newCell = newRow.insertCell();
             newtext = document.createTextNode(msg_user_id);
+            newCell.className ="userid"
             newCell.appendChild(newtext);
 
-            //コメント時間
+            //コメント時間(投稿時間)
             newCell = newRow.insertCell();
-            newtext = document.createTextNode(UnixToDatetime(commentTime));
+            newtext = document.createTextNode(UnixToDatetime(commentTime - beginStreamTime));
+            newCell.className ="time"
             newCell.appendChild(newtext);
 
             //コメント内容
             newCell = newRow.insertCell();
             newtext = document.createTextNode(comment);
+            newCell.className ="comment"
             newCell.appendChild(newtext);
+
+            $('table').resizableColumns({
+                store: window.store
+            });
         }
         
     }
@@ -203,7 +216,7 @@ window.onload = function(){
     //UNIX時間をDateタイムにする
     function UnixToDatetime(commentTime){
         let dateTime = new Date(commentTime * 1000);
-        return dateTime.toLocaleTimeString('ja-JP');
+        return dateTime.toLocaleTimeString('ja-JP',{ timeZone: 'Africa/Abidjan' });
     }
 }
 
