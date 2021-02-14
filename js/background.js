@@ -12,12 +12,12 @@ let NicoliveUrl = '';
 //     window.open('nicoment.html', "window_name", "width=1000,height=700,scrollbars=yes");
 // });
 
-//ページ更新があった場合
-chrome.tabs.onUpdated.addListener(function(tabid, info,tab){
-    if (info.status === 'complete' && tab.url.indexOf('https://live2.nicovideo.jp/watch/') !== -1) {
-        chrome.tabs.executeScript(null, { file: 'js/content.js' }, () => {});
-    }
-  });
+//ページ更新があった場合(manifest.jsonから呼べるので機能削除)
+// chrome.tabs.onUpdated.addListener(function(tabid, info,tab){
+//     if (info.status === 'complete' && tab.url.indexOf('https://live2.nicovideo.jp/watch/') !== -1) {
+//         chrome.tabs.executeScript(null, { file: 'js/content.js' }, () => {});
+//     }
+//   });
 
 //ContentからMessage取得し、popフラグだった場合開く
 chrome.runtime.onMessage.addListener(
@@ -59,8 +59,8 @@ chrome.runtime.onMessage.addListener(
                     );
                 }
             });
-            
         }
+        sendResponse({response: "listeher is successful"});
     }
 );
 
@@ -93,7 +93,6 @@ function waitPageLoad(chromeWindow) {
 
   //子ページ削除時Tabid初期化
 chrome.windows.onRemoved.addListener(function(windowId){
-    console.log(windowId);
     if(extWindow == windowId){
         extWindow = '';
     }

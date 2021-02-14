@@ -37,6 +37,7 @@ window.onload = function(){
                 CommentTable.value = "";
                 getWebScoektUrl(UrlData);
             }
+            sendResponse({response: "listeher is successful"});
         }
     );
 
@@ -119,6 +120,7 @@ window.onload = function(){
 
     //システムサーバエラー発生時実行
     function onErrorSystem(e){
+        websocket_system.close();
         //console.log("Error from System Server: " + e.data);
     }
 
@@ -167,7 +169,13 @@ window.onload = function(){
             let msg_user_id = msgJson.chat.user_id;
             let commentTime = msgJson.chat.date;
             let comment = msgJson.chat.content;
+            let adminComment;
 
+            //コメント種別
+            if(msgJson.chat.premium){
+                adminComment = msgJson.chat.premium;
+            }
+            console.log(adminComment);
             // テーブル追加処理
             let rowCount = CommentTable.rows.length;
             let newRow = creteTbody.insertRow(rowCount-1);
@@ -175,25 +183,29 @@ window.onload = function(){
             //コメント番号
             let newCell = newRow.insertCell();
             let newtext = document.createTextNode(commentNo);
-            newCell.className ="no"
+            newCell.className ="no";
             newCell.appendChild(newtext);
 
             //ユーザーID
             newCell = newRow.insertCell();
             newtext = document.createTextNode(msg_user_id);
-            newCell.className ="userid"
+            newCell.className ="userid";
             newCell.appendChild(newtext);
 
             //コメント時間(投稿時間)
             newCell = newRow.insertCell();
             newtext = document.createTextNode(UnixToDatetime(commentTime - beginStreamTime));
-            newCell.className ="time"
+            newCell.className ="time";
             newCell.appendChild(newtext);
 
             //コメント内容
             newCell = newRow.insertCell();
             newtext = document.createTextNode(comment);
-            newCell.className ="comment"
+            if(adminComment == '3'){
+                newCell.className ="comment comment_red";
+            }else{
+                newCell.className = "comment";
+            }
             newCell.appendChild(newtext);
 
             $('table').resizableColumns({
@@ -211,6 +223,7 @@ window.onload = function(){
     
     //コメントサーバエラー時
     function onErrorComment(e){
+        websocket_comment.close();
         //console.log("Error from Comment Server");
     }
 

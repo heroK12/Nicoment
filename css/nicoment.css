@@ -1,3 +1,7 @@
+body{
+    margin:0;
+}
+
 #table-wrap {
     width: 100%;
 }
@@ -46,6 +50,10 @@
 .comment {
     white-space: pre-line;
     width: 68.5%;
+}
+
+.comment_red {
+    color: red;
 }
 
 #CommentTable tr:nth-child(even) td {
